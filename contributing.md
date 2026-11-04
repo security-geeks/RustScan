@@ -7,19 +7,21 @@ Before contributing, read our [code of conduct](https://github.com/RustScan/Rust
 TL;DR if you abuse members of our community you will be **perma-banned** with no chance to get unbanned. No warnings either. 🤗
 
 RustScan has 2 major labels for GitHub issues you should look at:
-* Good First issue
-These are issues for newcomers to open source!
-[https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22](https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
-* Help wanted
-These are issues that aren't really for newcomers, but we could still do with help!
-[https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+label%3A%22help+wanted%22](https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+label%3A%22help+wanted%22)
+
+- Good First issue
+  These are issues for newcomers to open source!
+  [https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22](https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+- Help wanted
+  These are issues that aren't really for newcomers, but we could still do with help!
+  [https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+label%3A%22help+wanted%22](https://github.com/RustScan/RustScan/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+label%3A%22help+wanted%22)
 
 If you want to, solve the issue or comment on the issue for help.
 
-The [flow for contributing](https://guides.github.com/introduction/flow/) to open source software is:
-* Fork the repo
-* Make changes
-* Pull request to the repo
+The flow for contributing to open source software is:
+
+- Fork the repo
+- Make changes
+- Pull request to the repo
 
 And then comment on the issue that you've done.
 
@@ -28,6 +30,7 @@ RustScan also has some `// TODO`'s in the codebase, which are meant more for the
 If you have any feature suggestions or bugs, leave a GitHub issue. We welcome any and all support :D
 
 ## Rewarding you
+
 I cannot pay you :-( But, I can place your GitHub profile on the README under `#Contributors` as a thank you! :)
 
 ## Contributing development environment
@@ -39,7 +42,7 @@ To build it you just need to run:
 you@home:~/RustScan$ docker build -t rustscan_contributing -f contributing.Dockerfile
 ```
 
-Then you need to run the container with a volume so it can access, *with read and write permissions*, to RustScan files:
+Then you need to run the container with a volume so it can access, _with read and write permissions_, to RustScan files:
 
 ```bash
 you@home:~/RustScan$ docker run -ti --rm -v "$PWD":/rustscan -w /rustscan rustscan_contributing bash
@@ -51,10 +54,10 @@ You can now modify RustScan files with your favorite editor, once you want to co
 root@container:/rustscan# cargo build
 ```
 
-You are now ready to use RustScan:
+You can check the command-line interface without starting a scan:
 
 ```bash
-root@container:/rustscan# cargo run -- -b 2000 -t 5000 -a 127.0.0.1
+root@container:/rustscan# cargo run -- --help
 ```
 
 You can also format, lint with `clippy` and test the code with the following commands:
@@ -64,3 +67,17 @@ root@container:/rustscan# cargo fmt
 root@container:/rustscan# cargo clippy
 root@container:/rustscan# cargo test
 ```
+
+Automated tests and benchmarks must run without network traffic or external script
+execution. Keep coverage focused on parsing, configuration, port ordering, socket
+address iteration, and timing helpers. Do not add tests that run TCP/UDP scans
+(including localhost), resolve hostnames, or launch Nmap or other scripts.
+
+Scanning behaviour and speed are measured separately, by the opt-in "Scan benchmark"
+GitHub Actions workflow (`.github/workflows/scan-benchmark.yml`). It runs for pull
+requests that touch the scanner, its runtime or its dependencies, and can be started
+by hand from the Actions tab. It builds the change and its base in release mode,
+scans listeners that it opens on 127.0.0.1 inside the runner, checks that both
+builds find the same open ports, and adds a comparison table to the job summary. Its
+script (`.github/scan-benchmark/scan_bench.py`) port-scans the loopback interface,
+so it is meant for disposable CI runners only.
